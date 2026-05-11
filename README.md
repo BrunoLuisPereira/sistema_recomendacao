@@ -7,4 +7,5 @@ Alunos:
 Bruno Pereira
 Rafael Pereira
 Ramires Paes
+Victor Moy
 ```
