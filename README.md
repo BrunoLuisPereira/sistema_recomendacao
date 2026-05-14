@@ -8,23 +8,20 @@
 
 ## Integrantes
 
-| Nome | RA |
-|------|----|
-|      |    |
-|      |    |
-|      |    |
-|      |    |
-|      |    |
+- Bruno Pereira
+- Rafael Pereira
+- Ramires Paes
+- Victor Moy
 
 ---
 
 ## Objetivo
 
-Desenvolver um sistema inteligente capaz de processar avaliações textuais de produtos de e-commerce em português (PT-BR), tratar a incerteza dos dados e otimizar a recomendação de produtos ao usuário final, integrando três técnicas de IA:
+O projeto usa o dataset público da Olist (e-commerce brasileiro) para recomendar produtos com base nas avaliações dos clientes. A ideia é encadear três técnicas de IA de forma que a saída de uma alimenta a próxima:
 
-1. **PLN + Naive Bayes** — análise de sentimento das avaliações  
-2. **Sistema de Inferência Fuzzy (Mamdani)** — cálculo do score de atratividade  
-3. **Algoritmo Genético** — seleção da melhor combinação de produtos  
+1. **PLN + Naive Bayes** — lê os textos das avaliações e classifica o sentimento (positivo, negativo ou neutro)
+2. **Sistema de Inferência Fuzzy (Mamdani)** — combina o sentimento com o preço do produto para gerar um score de atratividade
+3. **Algoritmo Genético** — escolhe a melhor combinação de 5 produtos respeitando um orçamento e priorizando diversidade de categorias
 
 ---
 
@@ -101,7 +98,7 @@ A nota de 1 a 5 é convertida em sentimento:
 | Positivo | 0.91 | 0.92 | 0.91 |
 | **Acurácia geral** | | | **84%** |
 
-> O desempenho menor na classe Neutro é esperado: "neutro" é subjetivo e os textos de nota 3 muitas vezes contêm linguagem ambígua, com aspectos positivos e negativos misturados.
+A classe Neutro ficou bem abaixo das outras — o F1 de 0.12 mostra que o modelo quase não consegue identificar avaliações neutras. Isso faz sentido porque textos de nota 3 tendem a misturar elogios e reclamações, o que confunde o Naive Bayes. Tentamos ajustar o threshold mas o problema parece ser mais do dataset mesmo (notas 3 são minoria e muito variadas).
 
 A saída desta camada é a **probabilidade média de sentimento positivo** por produto, calculada sobre todas as suas avaliações.
 
@@ -183,7 +180,7 @@ bônus_diversidade = 1.5 × (n_categorias_distintas − 1)
 penalidade_orçamento = max(0, custo_total − R$1.000) × 0.05
 ```
 
-O bônus de diversidade incentiva o GA a recomendar produtos de categorias diferentes, evitando recomendações redundantes.
+O bônus de diversidade foi necessário porque sem ele o GA tendia a recomendar 5 produtos da mesma categoria (geralmente eletrônicos com score alto), o que não faz sentido como recomendação real.
 
 ### Resultados
 
@@ -281,6 +278,15 @@ n2-ia/
 | `pandas` | Manipulação e análise dos dados |
 | `numpy` | Operações numéricas |
 | `matplotlib` | Visualizações e gráficos |
+
+---
+
+## Decisões de Projeto e Dificuldades
+
+- **Dataset**: o Olist não tem um campo direto de "produto + avaliação", então foi necessário cruzar três tabelas (`order_reviews`, `order_items`, `products`) pelo `order_id`. Isso reduziu bastante o volume após o merge.
+- **Classe Neutro**: o modelo insiste em classificar tudo como positivo ou negativo. Consideramos remover a classe neutro e trabalhar só com binário, mas mantivemos por ser um requisito do trabalho.
+- **Normalização de preço**: normalizar dentro de cada categoria (e não no catálogo inteiro) fez diferença no fuzzy — sem isso, produtos baratos de categorias caras recebiam score muito baixo só pelo preço absoluto.
+- **GA convergência**: com população pequena (< 50) o GA convergia rápido mas para mínimos locais. 100 indivíduos e 80 gerações foi o ponto onde os resultados estabilizaram sem demorar muito.
 
 ---
 
