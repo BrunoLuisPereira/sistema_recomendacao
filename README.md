@@ -195,6 +195,8 @@ O bônus de diversidade foi necessário porque sem ele o GA tendia a recomendar 
 | `15964f24...` | ferramentas_jardim         |  44,99 | 0.99 | 8.83 |
 | **Total** | **5 categorias distintas** | **R$ 254,08** | — | **44,17** |
 
+Os scores ficaram idênticos porque o sistema fuzzy satura em 8.83 para qualquer combinação de sentimento alto + preço baixo/médio — é o teto prático da defuzzificação Mamdani com esses parâmetros. O GA diferencia os produtos pelo bônus de diversidade, não pelo score em si.
+
 ---
 
 ## Como Executar
@@ -249,20 +251,14 @@ python src/layer3_ga.py
 ## Estrutura do Projeto
 
 ```
-n2-ia/
-├── data/                          # Dataset Olist (não versionado)
-│   ├── olist_order_reviews_dataset.csv
-│   ├── olist_products_dataset.csv
-│   ├── olist_order_items_dataset.csv
-│   └── product_category_name_translation.csv
+├── data/               # Dataset Olist (não versionado)
 ├── src/
-│   ├── layer1_nlp.py              # Camada I: PLN + Naive Bayes
-│   ├── layer2_fuzzy.py            # Camada II: Sistema Fuzzy Mamdani
-│   └── layer3_ga.py               # Camada III: Algoritmo Genético
-├── results/                       # Saídas geradas (gerado automaticamente)
-├── main.py                        # Pipeline integrador
-├── requirements.txt               # Dependências Python
-└── README.md                      # Este arquivo
+│   ├── layer1_nlp.py
+│   ├── layer2_fuzzy.py
+│   └── layer3_ga.py
+├── results/
+├── main.py
+└── requirements.txt
 ```
 
 ---
@@ -292,9 +288,4 @@ n2-ia/
 
 ## Referências
 
-- OLIST. *Brazilian E-Commerce Public Dataset by Olist*. Kaggle, 2018. Disponível em: kaggle.com/datasets/olistbr/brazilian-ecommerce  
-- MITCHELL, T. M. *Machine Learning*. McGraw-Hill, 1997.  
-- ZADEH, L. A. Fuzzy sets. *Information and Control*, v. 8, n. 3, p. 338–353, 1965.  
-- HOLLAND, J. H. *Adaptation in Natural and Artificial Systems*. MIT Press, 1992.  
-- ORENGO, V. M.; HUYCK, C. A stemming algorithm for the Portuguese language. *SPIRE*, 2001.  
-- FORTIN, F. et al. DEAP: Evolutionary Algorithms Made Easy. *JMLR*, v. 13, p. 2171–2175, 2012.
+- OLIST. *Brazilian E-Commerce Public Dataset by Olist*. Kaggle, 2018. Disponível em: kaggle.com/datasets/olistbr/brazilian-ecommerce
